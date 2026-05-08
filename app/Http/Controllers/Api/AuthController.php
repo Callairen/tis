@@ -10,7 +10,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    // Data user dummy untuk simulasi [cite: 106-119]
     private $users = [
     [
         'id' => 1,
@@ -40,13 +39,14 @@ class AuthController extends Controller
         'password' => 'required|string|min:6|confirmed'
     ]);
 
-    // Logika Validasi Email Unik Manual (Pengerjaan Nomor 2)
+
+
     $isExist = collect($this->users)->firstWhere('email', $validated['email']);
 
     if ($isExist) {
         return response()->json([
             'message' => 'The email has already been taken.'
-        ], 422); // 422 Unprocessable Entity
+        ], 422); 
     }
 
     $user = [
@@ -69,20 +69,18 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        // Mencari user di array dummy berdasarkan email [cite: 145-146]
         $userData = collect($this->users)->firstWhere('email', $credentials['email']);
 
-        // Validasi password sederhana [cite: 147]
         if (!$userData || $userData['password'] !== $credentials['password']) {
             return response()->json(['message' => 'Invalid email or password'], 401);
         }
 
-        // Buat objek DummyUser dan generate token [cite: 151-156]
         $user = new DummyUser($userData);
         $token = JWTAuth::claims([
-            'email' => $user->email,
-            'name' => $user->name
-        ])->fromUser($user);
+        'email' => $user->email,
+        'name' => $user->name,
+        'role' => $userData['role']
+    ])->fromUser($user);  
 
         return response()->json([
             'message' => 'Login successful (dummy)',
@@ -93,7 +91,6 @@ class AuthController extends Controller
     public function logout()
     {
         try {
-            // Melakukan invalidasi pada token yang sedang digunakan [cite: 164]
             JWTAuth::invalidate(JWTAuth::getToken());
             return response()->json(['message' => 'User logged out successfully']);
         } catch (JWTException $e) {
@@ -102,17 +99,32 @@ class AuthController extends Controller
     }
 
     public function profile(Request $request)
-    {
-        // Mengambil payload yang sudah disisipkan oleh middleware dummy.jwt [cite: 177]
+{
+    try {
         $payload = $request->jwt_payload;
-
         return response()->json([
             'user' => [
                 'email' => $payload->get('email'),
-                'name' => $payload->get('name')
+                'name' => $payload->get('name'),
+                'role' => $payload->get('role')
             ]
         ]);
+    } catch (JWTException $e) {
+        return response()->json(['message' => 'Token is invalid or expired'], 401);
     }
+}
+    // public function profile(Request $request)
+    // {
+    //     // Mengambil payload yang sudah disisipkan oleh middleware dummy.jwt [cite: 177]
+    //     $payload = $request->jwt_payload;
+
+    //     return response()->json([
+    //         'user' => [
+    //             'email' => $payload->get('email'),
+    //             'name' => $payload->get('name')
+    //         ]
+    //     ]);
+    // }
 
     public function tokenCheck(Request $request)
     {
