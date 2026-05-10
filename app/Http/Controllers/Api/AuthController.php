@@ -11,25 +11,28 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     private $users = [
-    [
-        'id' => 1,
-        'name' => 'User Cakep',
-        'email' => 'user@example.com',
-        'password' => 'password123'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Admin Hebat',
-        'email' => 'admin@example.com',
-        'password' => 'secret321'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Devanida Ratna',
-        'email' => 'nana@example.com',
-        'password' => 'itulahpokoknya966'
-    ],
-];
+        [
+            'id' => 1,
+            'name' => 'User Cakep',
+            'email' => 'user@example.com',
+            'password' => 'password123',
+            'role' => 'user'
+        ],
+        [
+            'id' => 2,
+            'name' => 'Admin Hebat',
+            'email' => 'admin@example.com',
+            'password' => 'secret321',
+            'role' => 'admin'
+        ],
+        [
+            'id' => 3,
+            'name' => 'Devanida Ratna',
+            'email' => 'nana@example.com',
+            'password' => 'itulahpokoknya966',
+            'role' => 'user'
+        ],
+    ];
 
     public function register(Request $request)
 {
@@ -99,20 +102,22 @@ class AuthController extends Controller
     }
 
     public function profile(Request $request)
-{
-    try {
-        $payload = $request->jwt_payload;
-        return response()->json([
-            'user' => [
+    {
+        try {
+            $payload = $request->jwt_payload;
+            return response()->json([
+                'user' => [
                 'email' => $payload->get('email'),
                 'name' => $payload->get('name'),
                 'role' => $payload->get('role')
-            ]
-        ]);
-    } catch (JWTException $e) {
-        return response()->json(['message' => 'Token is invalid or expired'], 401);
+                ]
+            ]);
+        } catch (JWTException $e) {
+            return response()->json([
+                'message' => 'Token is invalid or expired'
+            ], 401);
+        }
     }
-}
     // public function profile(Request $request)
     // {
     //     // Mengambil payload yang sudah disisipkan oleh middleware dummy.jwt [cite: 177]
