@@ -32,6 +32,14 @@ class AuthController extends Controller
             'password' => 'itulahpokoknya966',
             'role' => 'user'
         ],
+
+        [
+            'id' => 4,
+            'name' => 'Nana Manager',
+            'email' => 'nana2@example.com',
+            'password' => 'rea123',
+            'role' => 'manager'
+        ],
     ];
 
     public function register(Request $request)

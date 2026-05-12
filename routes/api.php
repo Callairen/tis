@@ -40,5 +40,11 @@ Route::middleware(['dummy.jwt'])->group(function () {
         ]);
     })->middleware('role:user');
 
+    Route::get('/manager/dashboard', function () {
+        return response()->json([
+            'message' => 'Selamat datang di Dashboard Manager'
+        ]);
+    })->middleware('role:manager');
+
     Route::post('/logout', [AuthController::class, 'logout']);
 });
