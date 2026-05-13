@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\GatewayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 Route::get('/user', function (Request $request) {
 return $request->user();
 })->middleware('auth:sanctum');
@@ -11,12 +12,14 @@ return $request->user();
 Route::get('/ping', function() {
 return response()->json(['message' => 'pong']);
 });
+
 // CRUD Student langsung
 Route::post('/students', [StudentController::class, 'store']);
 Route::get('/students', [StudentController::class, 'index']);
 Route::put('/students/{nim}', [StudentController::class, 'update']);
 Route::patch('/students/{nim}', [StudentController::class, 'update']);
 Route::delete('/students/{nim}', [StudentController::class, 'destroy']);
+
 // JWT
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -30,8 +33,10 @@ return response()->json(['message' => 'Welcome to User Dashboard']);
 })->middleware('role:user');
 Route::post('/logout', [AuthController::class, 'logout']);
 });
+
 // API Gateway
 Route::middleware(['dummy.jwt'])->prefix('gateway')->group(function () {
+
 Route::get('/students', [GatewayController::class, 'getStudents'])
 ->middleware('role:admin,user');
 Route::post('/students', [GatewayController::class, 'createStudent'])
@@ -42,4 +47,14 @@ Route::patch('/students/{nim}', [GatewayController::class, 'updateStudent'])
 ->middleware('role:admin');
 Route::delete('/students/{nim}', [GatewayController::class, 'deleteStudent'])
 ->middleware('role:admin');
+
+Route::get('/admin/dashboard', [GatewayController::class, 'getAdminDashboard'])
+        ->middleware('role:admin');
+
+    Route::get('/user/dashboard', [GatewayController::class, 'getUserDashboard'])
+        ->middleware('role:user');
+});
+
+Route::middleware(['dummy.jwt'])->prefix('gateway')->group(function () {
+    Route::get('/profile', [GatewayController::class, 'getProfile']);
 });
